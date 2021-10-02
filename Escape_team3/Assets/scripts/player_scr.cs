@@ -51,7 +51,21 @@ public class player_scr : MonoBehaviour
             healthbar.SetHealth(health);
         }
     }
-    
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("base lava"))
+        {
+            health -= 3 * (Time.fixedDeltaTime);
+            healthbar.SetHealth(health);
+            hit.loop = true;
+            hit.Play();
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        hit.loop = false;
+    }
+
     void scorer()
     {
         real_score.text = score.ToString();
