@@ -11,4 +11,8 @@ public class destroyOnHit : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    /*private void Destroy_it()
+    {
+        Destroy(gameObject);
+    }*/
 }

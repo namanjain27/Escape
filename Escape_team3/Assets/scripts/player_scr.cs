@@ -15,50 +15,51 @@ public class player_scr : MonoBehaviour
     public GameObject rock_spawner;
     public AudioSource hit;
     public AudioSource gameOver_audio;
-    public float score;
+    public float score = 0f;
     public Text real_score;
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        health = 100f;
-    }
+    
 
-    private void Update()
-    {
-       if(health <= 0)
-        {
-            gameover();
-        }
-        score = Time.time;
-        scorer();
-    }
+    
 
     void gameover()
     {
         rock_spawner.GetComponent<rockspawner>().enabled = false;
         gameOver_canvas.SetActive(true);
-        gameOver_audio.Play();
         hit.enabled = false;
-        gameObject.GetComponent<player_scr>().enabled = false;
+        hori_F = 0f;
+        vert_F = 0f;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("rock"))
+        if (collision.gameObject.CompareTag("rock") && health>0f)
         {
             health -= 5f;
             hit.Play();
             healthbar.SetHealth(health);
+        }
+        if (collision.gameObject.CompareTag("base lava"))
+        {
+            if (score != 0f && health > 0f)
+            {
+                health -= 3 * (Time.fixedDeltaTime);
+                healthbar.SetHealth(health);
+                //hit.loop = true;
+                hit.Play();
+            }
         }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.CompareTag("base lava"))
         {
-            health -= 3 * (Time.fixedDeltaTime);
-            healthbar.SetHealth(health);
-            hit.loop = true;
-            hit.Play();
+            if(score != 0f && health>0f)
+            {
+                health -= 3 * (Time.fixedDeltaTime);
+                healthbar.SetHealth(health);
+                hit.loop = true;
+                hit.Play();
+            }
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -68,13 +69,30 @@ public class player_scr : MonoBehaviour
 
     void scorer()
     {
-        real_score.text = score.ToString();
+        real_score.text = "Score - " + (int)score;
     }
 
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        health = 100f;
+        healthbar.SetHealth(health);
+    }
+
+    private void Update()
+    {
+        if (health <= 0)
+        {
+            gameover();
+        }
+        else
+        {
+            score += Time.deltaTime;
+            scorer();
+        }
+    }
     private void FixedUpdate()
     {
-        
-
         if (Input.GetKey("a"))
         {
             
@@ -93,10 +111,5 @@ public class player_scr : MonoBehaviour
         {
             rb.AddForce(new Vector2(0, -vert_F), ForceMode2D.Force);
         }
-
-
-        
-
-
     }
 }
